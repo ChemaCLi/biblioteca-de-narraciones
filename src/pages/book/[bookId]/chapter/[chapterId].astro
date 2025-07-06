@@ -1,0 +1,311 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import booksData from '../../../../data/books.json';
+
+export async function getStaticPaths() {
+  const paths = [];
+  
+  for (const book of booksData.books) {
+    for (const chapter of book.chapters) {
+      paths.push({
+        params: { 
+          bookId: book.id, 
+          chapterId: chapter.id 
+        },
+        props: { book, chapter },
+      });
+    }
+  }
+  
+  return paths;
+}
+
+const { book, chapter } = Astro.props;
+---
+
+<Layout title={`${chapter.title} - ${book.title}`}>
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <!-- Breadcrumb -->
+      <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+          <li><a href="/" class="hover:text-gray-700">Inicio</a></li>
+          <li>/</li>
+          <li><a href={`/book/${book.id}`} class="hover:text-gray-700">{book.title}</a></li>
+          <li>/</li>
+          <li class="text-gray-900">{chapter.title}</li>
+        </ol>
+      </nav>
+
+      <!-- Audio Player Section -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex flex-col md:flex-row gap-8">
+          <!-- Book Cover -->
+          <div class="flex-shrink-0">
+            <img 
+              src={book.coverImage} 
+              alt={`Portada de ${book.title}`}
+              class="w-64 h-80 object-cover rounded-lg shadow-md"
+              onerror="this.src='/images/default-cover.jpg'"
+            />
+          </div>
+
+          <!-- Player Info -->
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{book.title}</h1>
+            <p class="text-xl text-gray-600 mb-4">{book.author}</p>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">{chapter.title}</h2>
+            <p class="text-gray-700 mb-6 leading-relaxed">{chapter.description}</p>
+
+            <!-- Audio Player -->
+            <div class="bg-gray-50 rounded-lg p-6">
+              <audio 
+                id="audioPlayer" 
+                preload="metadata"
+                class="w-full"
+                controls
+                data-src={chapter.audioFile}
+              >
+                <source src={chapter.audioFile} type="audio/mp4">
+                Tu navegador no soporta el elemento de audio.
+              </audio>
+
+              <!-- Custom Player Controls -->
+              <div class="mt-6 space-y-4">
+                <!-- Progress Bar -->
+                <div class="flex items-center space-x-4">
+                  <span id="currentTime" class="text-sm text-gray-500">0:00</span>
+                  <div class="flex-1 relative">
+                    <input 
+                      type="range" 
+                      id="progressBar" 
+                      min="0" 
+                      max="100" 
+                      value="0"
+                      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                  </div>
+                  <span id="duration" class="text-sm text-gray-500">{chapter.duration}</span>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="flex items-center justify-center space-x-4">
+                  <button 
+                    id="rewindBtn" 
+                    class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+                    title="Retroceder 10 segundos"
+                  >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.334 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0012 16V8a1 1 0 00-1.6-.8l-5.334 4z"></path>
+                    </svg>
+                  </button>
+
+                  <button 
+                    id="playPauseBtn" 
+                    class="p-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                  >
+                    <svg id="playIcon" class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg id="pauseIcon" class="w-8 h-8 hidden" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                    </svg>
+                  </button>
+
+                  <button 
+                    id="forwardBtn" 
+                    class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+                    title="Adelantar 10 segundos"
+                  >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.334-4zM19.933 12.8a1 1 0 000-1.6L14.6 7.2A1 1 0 0013 8v8a1 1 0 001.6.8l5.334-4z"></path>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Volume Control -->
+                <div class="flex items-center space-x-4">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                  </svg>
+                  <input 
+                    type="range" 
+                    id="volumeControl" 
+                    min="0" 
+                    max="100" 
+                    value="100"
+                    class="w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Chapter Tags -->
+            {chapter.tags.filter(tag => tag.visible).length > 0 && (
+              <div class="mt-6">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Etiquetas:</h3>
+                <div class="flex gap-2">
+                  {chapter.tags.filter(tag => tag.visible).map((tag) => (
+                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="flex justify-between">
+        {book.chapters.findIndex(c => c.id === chapter.id) > 0 && (
+          <a 
+            href={`/book/${book.id}/chapter/${book.chapters[book.chapters.findIndex(c => c.id === chapter.id) - 1].id}`}
+            class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Capítulo anterior
+          </a>
+        )}
+        
+        {book.chapters.findIndex(c => c.id === chapter.id) < book.chapters.length - 1 && (
+          <a 
+            href={`/book/${book.id}/chapter/${book.chapters[book.chapters.findIndex(c => c.id === chapter.id) + 1].id}`}
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Siguiente capítulo
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        )}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: none;
+  }
+</style>
+
+<script>
+  class AudioPlayer {
+    constructor() {
+      this.audio = document.getElementById('audioPlayer');
+      this.playPauseBtn = document.getElementById('playPauseBtn');
+      this.playIcon = document.getElementById('playIcon');
+      this.pauseIcon = document.getElementById('pauseIcon');
+      this.progressBar = document.getElementById('progressBar');
+      this.currentTimeSpan = document.getElementById('currentTime');
+      this.durationSpan = document.getElementById('duration');
+      this.rewindBtn = document.getElementById('rewindBtn');
+      this.forwardBtn = document.getElementById('forwardBtn');
+      this.volumeControl = document.getElementById('volumeControl');
+      
+      this.isPlaying = false;
+      this.init();
+    }
+
+    init() {
+      // Play/Pause functionality
+      this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+      
+      // Progress bar
+      this.audio.addEventListener('loadedmetadata', () => {
+        this.durationSpan.textContent = this.formatTime(this.audio.duration);
+      });
+      
+      this.audio.addEventListener('timeupdate', () => {
+        const progress = (this.audio.currentTime / this.audio.duration) * 100;
+        this.progressBar.value = progress;
+        this.currentTimeSpan.textContent = this.formatTime(this.audio.currentTime);
+      });
+      
+      this.progressBar.addEventListener('input', (e) => {
+        const time = (e.target.value / 100) * this.audio.duration;
+        this.audio.currentTime = time;
+      });
+      
+      // Rewind/Forward
+      this.rewindBtn.addEventListener('click', () => {
+        this.audio.currentTime = Math.max(0, this.audio.currentTime - 10);
+      });
+      
+      this.forwardBtn.addEventListener('click', () => {
+        this.audio.currentTime = Math.min(this.audio.duration, this.audio.currentTime + 10);
+      });
+      
+      // Volume control
+      this.volumeControl.addEventListener('input', (e) => {
+        this.audio.volume = e.target.value / 100;
+      });
+      
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        switch(e.code) {
+          case 'Space':
+            e.preventDefault();
+            this.togglePlayPause();
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            this.audio.currentTime = Math.max(0, this.audio.currentTime - 10);
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            this.audio.currentTime = Math.min(this.audio.duration, this.audio.currentTime + 10);
+            break;
+        }
+      });
+    }
+
+    togglePlayPause() {
+      if (this.isPlaying) {
+        this.audio.pause();
+        this.playIcon.classList.remove('hidden');
+        this.pauseIcon.classList.add('hidden');
+      } else {
+        this.audio.play();
+        this.playIcon.classList.add('hidden');
+        this.pauseIcon.classList.remove('hidden');
+      }
+      this.isPlaying = !this.isPlaying;
+    }
+
+    formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = Math.floor(seconds % 60);
+      return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+  }
+
+  // Initialize player when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new AudioPlayer();
+  });
+</script> 

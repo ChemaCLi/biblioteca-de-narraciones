@@ -1,0 +1,30 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "astro",
+  "rewrites": [
+    {
+      "source": "/audio/(.*)",
+      "destination": "/audio/$1"
+    },
+    {
+      "source": "/images/(.*)",
+      "destination": "/images/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/audio/(.*)",
+      "headers": [
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        },
+        {
+          "key": "Content-Type",
+          "value": "audio/mp4"
+        }
+      ]
+    }
+  ]
+} 

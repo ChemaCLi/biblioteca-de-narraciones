@@ -1,0 +1,29 @@
+{
+  "books": [
+    {
+      "id": "ridicula-idea-no-volver-a-verte",
+      "title": "La ridícula idea no volver a verte",
+      "author": "Rosa Montero",
+      "description": "Cuando Rosa Montero leyó el diario que Marie Curie comenzó tras la muerte de su esposo, se inspiró para escribir esta obra. La ridícula idea de no volver a verte surge de la historia de esta mujer que desafió las convenciones de su tiempo. A través de la vida de Curie, Montero teje una narrativa que oscila entre el recuerdo personal y la memoria colectiva, entre el análisis contemporáneo y la evocación íntima. En estas páginas se aborda la superación del dolor, las dinámicas entre hombres y mujeres, la pasión del sexo, la muerte digna y la vida plena, el contraste entre ciencia e ignorancia, y el papel redentor de la literatura. Este libro, que desafía clasificaciones, incluye fotografías, recuerdos, amistades y anécdotas que rescatan el placer ancestral de escuchar relatos cautivadores. Un texto genuino y conmovedor que captura la atención desde el principio.",
+      "age": "16+",
+      "theme": "Novela",
+      "publisher": "Booket",
+      "edition": "2018",
+      "isbn": "09786070752155",
+      "coverImage": "/images/ridicula-idea-no-volver-a-verte-cover.jpeg",
+      "chapters": [
+        {
+          "id": "capitulo-03",
+          "title": "Capítulo 3. Pajaros con pechugas palpitantes",
+          "duration": "00:34:26",
+          "description": "En este capítulo nos acercamos al contexto en el que creció Marie Curie en Polonia, durante una época bastante difícil para su país y en una etapa muy personal de su vida amorosa.",
+          "audioFile": "/audio/ridicula-idea-no-volver-a-verte/capitulo-03-Pajaros con pechugas palpitantes.m4a",
+          "tags": [
+            { "name": "lugar", "visible": true },
+            { "name": "amor", "visible": true }
+          ]
+        }
+      ]
+    }
+  ]
+} 
